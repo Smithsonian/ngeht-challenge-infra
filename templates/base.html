@@ -1,0 +1,21 @@
+<html>
+<head>
+<title>{% block title %}{{ stuff.title }}{% endblock %}</title>
+<meta name="format-detection" content="telephone=no">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+{% block header %}{% endblock %}
+</head>
+
+<body>
+
+<h1>
+  <div style="display: inline-block; background-color: lightblue; border-radius: 5px; padding: 2px">
+    <a style="color: black; text-decoration: none" href="{{stuff.baseurl}}">{{ stuff.title }}</a>
+  </div>
+  {{ self.title() }}
+</h1>
+
+{% block content %}{% endblock %}
+<p><hr><p>
+</body>
+</html>

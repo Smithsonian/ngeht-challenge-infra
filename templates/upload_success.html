@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Successful Upload | ngEHT Analysis Challenge
+{% endblock title %}
+
+{% block header %}
+{% endblock header %}
+
+{% block content %}
+
+You have successfully uploaded a file to the ngEHT Analysis Challenge!
+
+<ul>
+<li>Your name: {{ fields.name }}</li>
+<li>Your email: {{ fields.email }}</li>
+<li>Your team: {{ fields.team }}</li>
+<li>Your filename: {{ fields.filename }}</li>
+<li>File size: {{ fields.zipsize }}</li>
+</ul>
+
+{% endblock content %}

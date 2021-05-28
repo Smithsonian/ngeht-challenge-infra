@@ -10,6 +10,13 @@ server {
         index  index.html;
     }
 
+    location /upload {
+       proxy_pass http://localhost:8001;
+       proxy_http_version 1.1;
+       proxy_set_header X-Real-IP $remote_addr;
+       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
     ssl_certificate /etc/letsencrypt/live/challenge.bx9.net/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/challenge.bx9.net/privkey.pem; # managed by Certbot
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+Failed Upload | ngEHT Analysis Challenge
+{% endblock title %}
+
+{% block header %}
+{% endblock header %}
+
+{% block content %}
+
+Your file upload for the ngEHT Analysis Challenge didn't succeed!
+<p>
+
+Here are what the problems appear to be:
+
+<ul>
+{% for p in problems %}
+<li>{{ p }}</li>
+{% endfor %}
+</ul>
+
+Here are the details we collected:
+
+<ul>
+<li>Your name: {{ fields.name }}</li>
+<li>Your email: {{ fields.email }}</li>
+<li>Your team: {{ fields.team }}</li>
+<li>Your filename: {{ fields.filename }}</li>
+<li>File size: {{ fields.zipsize }}</li>
+</ul>
+
+{% endblock content %}
