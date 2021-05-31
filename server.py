@@ -4,17 +4,14 @@ from concurrent.futures import ProcessPoolExecutor
 import functools
 import time
 import logging
-import json
 import re
 import random
 
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from slack_sdk.webhook.async_client import AsyncWebhookClient
 
-
-mp_thread_count = 1
+from slack_utils import get_slack_webhook, slack_message
 
 template_stuff = {
     'title': 'ngEHT Analysis Challenge',
@@ -23,26 +20,31 @@ template_stuff = {
 
 outputdir = '/home/astrogreg/github/ngeht-analysis-content/uploads'
 
+mp_process_count = 1
+mp_executor = ProcessPoolExecutor(mp_process_count)
 
 LOGGER = logging.getLogger(__name__)
-mp_executor = ProcessPoolExecutor(mp_thread_count)
 
 
 async def run_burner(wrap):
-    '''Helper function to asynchronously run a blocking cpu-intensive task on another core
+    '''Helper function to asynchronously run a blocking cpu-intensive task on another core,
+    similar to how python's multiprocessing module works. The function isn't allowed to
+    take any arguments, so wrap it first:
 
     wrap = functools.partial(func, args...)
     '''
     return await asyncio.ensure_future(asyncio.get_event_loop().run_in_executor(mp_executor, wrap))
 
 
-async def run_external(cmd):
+async def run_external_exec(cmd):
     '''Helper function to run a non-blocking external command. cmd is a list.'''
-    proc = await asyncio.create_subprocess_shell(cmd,
-                                                 stdout=asyncio.subprocess.PIPE,
-                                                 stderr=asyncio.subprocess.PIPE)
+    proc = await asyncio.create_subprocess_exec(*cmd,
+                                                stdout=asyncio.subprocess.PIPE,
+                                                stderr=asyncio.subprocess.PIPE)
     stdout, stderr = await proc.communicate()
     return proc.returncode, stdout.decode(), stderr.decode()
+    # TODO make this look like a subprocess module return?
+    # TODO note that the _shell() version takes a string, not a list
 
 
 def example_burn(arg):
@@ -55,44 +57,6 @@ def example_burn(arg):
 async def app_factory():
     # asyncio is started at this point
     return app
-
-
-def get_slack_webhook():
-    env = os.getenv('SERVER_SLACK_WEBHOOK')
-    if env is not None:
-        return env
-
-    slack_secrets_file = '~/.slack_secrets'
-    try:
-        with open(os.path.expanduser(slack_secrets_file), 'r') as fp:
-            secrets = json.load(fp)
-    except Exception:
-        LOGGER.exception('slack secret json load from ~/.slack_secrets failed')
-        return
-    try:
-        url = secrets['webhooks']['Event Horizon Telescope']['ngeht-challenge-bots']
-    except Exception:
-        LOGGER.exception('slack secret json key not found in ~/.slack_secrets')
-        return
-
-    return AsyncWebhookClient(url)
-
-
-async def slack_message(text, webhook):
-    if webhook is None:
-        LOGGER.warning('not sending slack message because webhook is not configured: '+text)
-        return
-
-    #response = await webhook.send(text=text)
-
-    print('would have sent to slack:')
-    print(text)
-    return
-
-    if response.status_code != 200:
-        LOGGER.warning('abnormal response status from slack webhook: {}'.format(response.status_code))
-    elif response.body != 'ok':
-        LOGGER.warning('abnormal response body from slack webhook: '+response.body)
 
 
 def upload_get_challenge(fields, problems):
@@ -128,6 +92,10 @@ def upload_rename_upload(outfile, fields, problems):
             os.unlink(os.path.dirname(outfile))
         except Exception as e:
             LOGGER.exception('{} exception removing temporary upload directory'.format(str(e)))
+    else:
+        new_outfile = outfile
+
+    fields['ourname'] = os.path.basename(new_outfile)  # NNNN.zip
     return new_outfile
 
 
@@ -140,7 +108,7 @@ def upload_get_outfile(outputdir, challenge, problems):
             return
 
         while True:
-            r = str(random.randint(100, 999))
+            r = str(random.randint(1000, 9999))
             full_outputdir = challenge_outputdir + r
             if os.path.isdir(full_outputdir):
                 continue
@@ -214,18 +182,10 @@ def upload_check_one_of(fields, problems):
 
 
 async def upload_test(outfile, fields, problems):
-    '''
-zip -Tv foo.zip 
-Archive:  foo.zip
-    testing: requirements.txt         OK
-No errors detected in compressed data of foo.zip.
-test of foo.zip OK
-'''
     if not outfile:
         return
-    cmd = 'zip -Tv ' + outfile
-    print(cmd)
-    returncode, stdout, stderr = await run_external(cmd)
+    cmd = ('zip', '-Tv', outfile)
+    returncode, stdout, stderr = await run_external_exec(cmd)
 
     if returncode != 0:
         problems.append('zip file arrived corrupted (return code {})'.format(returncode))
@@ -233,6 +193,7 @@ test of foo.zip OK
 
     filelist = []
     for line in stdout.splitlines():
+        #   testing: requirements.txt         OK
         line = line.strip()
         if line.startswith('testing: ') and line.endswith(' OK'):
             filelist.append(line[9:-3].strip())
@@ -241,6 +202,21 @@ test of foo.zip OK
     print(' ', '\n  '.join(filelist))
 
     # TODO: check filenames?
+
+
+def disk_log(outfile, fail, fields, problems):
+    if not outfile.endswith('.zip'):
+        return
+    log = []
+    s = 'failure' if fail else 'success'
+    log.append('Upload '+s)
+    for k, v in fields.items():
+        log.append(k + ': ' + v)
+    for p in problems:
+        log.append('problem: ' + p)
+
+    with open(outfile[:-3]+'txt', 'w') as fd:
+        print('\n'.join(log), file=fd)
 
 
 def upload_log(fail, fields, problems):
@@ -253,6 +229,7 @@ def upload_log(fail, fields, problems):
 
 
 async def upload_slack_response(fail, fields, problems, webhook):
+    '''The slack response should be formatted with a minimum number of lines.'''
     t = 'upload failure!' if fail else 'upload success!'
     t += ' ' + ' / '.join(fields.values())
     if problems:
@@ -267,7 +244,7 @@ def upload_response(fail, fields, problems):
     return web.Response(text=html, content_type='text/html')
 
 
-async def upload_log_and_respond(fields, problems, slack_webhook):
+async def upload_log_and_respond(outfile, fields, problems, slack_webhook):
     # flesh out fields to include all fields for templating
     for f in ('name', 'email', 'team', 'filename', 'zipsize'):
         if f not in fields or fields[f] is None:
@@ -280,8 +257,9 @@ async def upload_log_and_respond(fields, problems, slack_webhook):
     else:
         fail = False
 
-    await upload_slack_response(fail, fields, problems, slack_webhook)  # TODO: get local name into slack message NNN.zip
-    upload_log(fail, fields, problems)  # TODO: create a file with this info, not just slack.
+    await upload_slack_response(fail, fields, problems, slack_webhook)
+    disk_log(outfile, fail, fields, problems)
+    upload_log(fail, fields, problems)
     return upload_response(fail, fields, problems)
 
 
@@ -305,13 +283,15 @@ async def do_fork_burn_10(request):
 async def upload_wrapper(request):
     LOGGER.info('start of upload')
     try:
+        # wrap the whole thing with a "hail mary" debugging try/except
         ret = await upload(request)
     except web.HTTPException:
         LOGGER.exception('raising HTTPException in upload try/except')
-        raise
+        raise  # I belive this is caught in aiohttp and does not cause server.py to exit
     except Exception as e:
         LOGGER.exception('Exception in the webserver upload code')
-        ret = 'Greg''s upload code just crashed with exception '+str(e)
+        ret = 'Greg\'s upload code just crashed with exception '+str(e)
+        await slack_message(ret, slack_webhook)
         return web.Response(status=500, text=ret, content_type='text/plain')
     return ret
 
@@ -326,7 +306,7 @@ async def upload(request):
     upload_check_one_of(fields, problems)
     await upload_test(outfile, fields, problems)
 
-    return await upload_log_and_respond(fields, problems, slack_webhook)
+    return await upload_log_and_respond(outfile, fields, problems, slack_webhook)
 
 # TODO: compute metrics?
 # TODO: figure out how to do processing after the return (asyncio background task)
@@ -340,7 +320,7 @@ env = Environment(
     autoescape=select_autoescape(['html'])
 )
 
-loglevel = os.getenv('SERVER_LOGLEVEL')  # DEBUG, etc
+loglevel = os.getenv('SERVER_LOGLEVEL') or 'INFO'  # DEBUG, etc
 logging.basicConfig(level=loglevel)
 
 slack_webhook = get_slack_webhook()
