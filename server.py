@@ -279,7 +279,7 @@ async def do_fork_burn_10(request):
     return web.Response(status=200, text=ret, content_type='text/plain')
 
 
-@routes.post('/upload-test')
+@routes.get('/upload-test')
 async def test_endpoint(request):
     '''An endpoint to be used for monitoring
     '''
