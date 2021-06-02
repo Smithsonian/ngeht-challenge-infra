@@ -279,6 +279,13 @@ async def do_fork_burn_10(request):
     return web.Response(status=200, text=ret, content_type='text/plain')
 
 
+@routes.post('/upload-test')
+async def test_endpoint(request):
+    '''An endpoint to be used for monitoring
+    '''
+    return web.Response(status=200, text='Hello, world!', content_type='text/plain')
+
+
 @routes.post('/upload')
 async def upload_wrapper(request):
     LOGGER.info('start of upload')
