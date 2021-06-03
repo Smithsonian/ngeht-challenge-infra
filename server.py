@@ -15,8 +15,10 @@ from slack_utils import get_slack_webhook, slack_message
 
 template_stuff = {
     'title': 'ngEHT Analysis Challenge',
-    'baseurl': '//challenge.bx9.net/',
+    'baseurl': '/',  # should end with /
 }
+
+challenge_url = template_stuff['baseurl'] + '{}/'
 
 outputdir = '/home/astrogreg/github/ngeht-analysis-content/uploads'
 
@@ -205,7 +207,7 @@ async def upload_test(outfile, fields, problems):
 
 
 def disk_log(outfile, fail, fields, problems):
-    if not outfile.endswith('.zip'):
+    if not outfile or not outfile.endswith('.zip'):
         return
     log = []
     s = 'failure' if fail else 'success'
@@ -240,6 +242,7 @@ async def upload_slack_response(fail, fields, problems, webhook):
 def upload_response(fail, fields, problems):
     t = 'upload_failure.html' if fail else 'upload_success.html'
     template = env.get_template(t)
+    template_stuff['return'] = challenge_url.format(fields['challenge'])
     html = template.render(stuff=template_stuff, fields=fields, problems=problems)
     return web.Response(text=html, content_type='text/html')
 
