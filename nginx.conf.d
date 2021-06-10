@@ -10,6 +10,26 @@ server {
         index  index.html;
     }
 
+    #$ htpasswd /file username
+    location /c1downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 1";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+    location /c2downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 2";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+    location /c3downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 3";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+
     location /upload {
        proxy_pass http://localhost:8001;
        proxy_http_version 1.1;
@@ -50,6 +70,26 @@ server {
     location / {
         root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
         index  index.html;
+    }
+
+    #$ htpasswd /file username
+    location /c1downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 1";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+    location /c2downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        index  index.html;
+        auth_basic "Enter challenge2/password for Challenge 2";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+    location /c3downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        index  index.html;
+        auth_basic "Enter challenge3/password for Challenge 3";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
     }
 
     location /upload {
