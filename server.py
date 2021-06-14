@@ -178,9 +178,9 @@ async def upload_parse_form(reader, problems):
 
 
 def upload_check_one_of(fields, problems):
-    one_of = ('name', 'email', 'team')
+    one_of = ('name', 'email')
     if not any([fields[x] for x in one_of]):
-        problems.append('must specify at least one of email, name, or team name')
+        problems.append('must specify at least one of email or name')
 
 
 async def upload_test(outfile, fields, problems):
@@ -200,7 +200,7 @@ async def upload_test(outfile, fields, problems):
         if line.startswith('testing: ') and line.endswith(' OK'):
             filelist.append(line[9:-3].strip())
 
-    print('{} is good and the files in it are:')
+    print('{} is good and the files in it are:'.format(outfile))
     print(' ', '\n  '.join(filelist))
 
     # TODO: check filenames?
@@ -249,7 +249,7 @@ def upload_response(fail, fields, problems):
 
 async def upload_log_and_respond(outfile, fields, problems, slack_webhook):
     # flesh out fields to include all fields for templating
-    for f in ('name', 'email', 'team', 'filename', 'zipsize'):
+    for f in ('name', 'email', 'filename', 'zipsize'):
         if f not in fields or fields[f] is None:
             fields[f] = 'None'
     if 'zipsize' in fields:
@@ -271,7 +271,7 @@ routes = web.RouteTableDef()
 
 @routes.get('/testing/fork/sleep_10')
 async def do_fork_sleep_10(request):
-    await run_external('sleep 10')
+    await run_external_exec('sleep 10')
     return web.Response(status=200, text='sleep 10', content_type='text/plain')
 
 
