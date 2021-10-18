@@ -17,6 +17,12 @@ server {
         auth_basic "Enter challenge1/password for Challenge 1";
         auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
     }
+    location /c1results/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 1";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
     location /c2downloads/ {
         root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
         index  index.html;
@@ -75,6 +81,12 @@ server {
 
     #$ htpasswd /file username
     location /c1downloads/ {
+        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 1";
+        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+    }
+    location /c1results/ {
         root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 1";
