@@ -101,8 +101,10 @@ def upload_rename_upload(outfile, fields, problems):
     return new_outfile
 
 
-def upload_get_outfile(outputdir, challenge, problems):
+def upload_get_outfile(outputdir, challenge, filename, problems):
     outfile = None
+    filename = filename[:-4]  # remove .zip
+
     if not problems:
         challenge_outputdir = outputdir + '/' + challenge + '/'
         if not os.path.isdir(challenge_outputdir):
@@ -113,9 +115,10 @@ def upload_get_outfile(outputdir, challenge, problems):
             r = str(random.randint(1000, 9999))
             full_outputdir = challenge_outputdir + r
             if os.path.isdir(full_outputdir):
+                # already exists, try another
                 continue
             os.makedirs(full_outputdir, exist_ok=True)
-            outfile = full_outputdir + '/{}.zip'.format(r)
+            outfile = full_outputdir + '/{}_{}.zip'.format(filename, r)
             break
     print('outfile is', outfile)
     return outfile
@@ -160,7 +163,7 @@ async def upload_parse_form(reader, problems):
             continue
 
         print('field zip')
-        zipfilereader = field
+        zipfilereader = field  # a BodyPartReader, assuming not nested multipart
         filename = zipfilereader.filename
         fields['filename'] = filename
         if not filename.lower().endswith('.zip'):
@@ -168,7 +171,7 @@ async def upload_parse_form(reader, problems):
             continue
         # we have to read the file right away... and the form "challenge" field might be later
         challenge = upload_get_challenge(fields, problems)
-        outfile = upload_get_outfile(outputdir, challenge, problems)
+        outfile = upload_get_outfile(outputdir, challenge, filename, problems)
         await upload_file(zipfilereader, outfile, fields, problems)
 
     if not zipfilereader:
