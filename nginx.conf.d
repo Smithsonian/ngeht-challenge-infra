@@ -6,34 +6,34 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location / {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
     }
 
     #$ htpasswd /file username
     location /c1downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 1";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c1results/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 1";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c2downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 2";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c3downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 3";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
 
     location /upload {
@@ -58,7 +58,7 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location /.well-known/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/.well-known/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/.well-known/;
         index  index.html;
     }
 
@@ -75,34 +75,34 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location / {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
     }
 
     #$ htpasswd /file username
     location /c1downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 1";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c1results/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge1/password for Challenge 1";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c2downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge2/password for Challenge 2";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
     location /c3downloads/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge3/password for Challenge 3";
-        auth_basic_user_file /home/astrogreg/github/ngeht-analysis-infra/live-htpasswd;
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
 
     location /upload {
@@ -127,7 +127,7 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location /.well-known/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/test-website/.well-known/;
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/.well-known/;
         index  index.html;
     }
 
@@ -144,7 +144,7 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location / {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
         index  index.html;
     }
 
@@ -170,7 +170,7 @@ server {
     add_header Permissions-Policy interest-cohort=() always;
 
     location /.well-known/ {
-        root   /home/astrogreg/github/ngeht-analysis-content/live-website/.well-known/;
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/.well-known/;
         index  index.html;
     }
 
