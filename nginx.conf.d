@@ -41,7 +41,7 @@ server {
        proxy_http_version 1.1;
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       client_max_body_size 50m;
+       client_max_body_size 0;  # disable size checking
     }
 
     ssl_certificate /etc/letsencrypt/live/challenge.bx9.net/fullchain.pem; # managed by Certbot
@@ -110,7 +110,7 @@ server {
        proxy_http_version 1.1;
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       client_max_body_size 50m;
+       client_max_body_size 0;  # disable size checking
     }
 
     ssl_certificate /etc/letsencrypt/live/test.challenge.bx9.net/fullchain.pem; # managed by Certbot
@@ -153,7 +153,7 @@ server {
        proxy_http_version 1.1;
        proxy_set_header X-Real-IP $remote_addr;
        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-       client_max_body_size 50m;
+       client_max_body_size 0;  # disable size checking
     }
 
     ssl_certificate /etc/letsencrypt/live/challenge.ngeht.org/fullchain.pem; # managed by Certbot
