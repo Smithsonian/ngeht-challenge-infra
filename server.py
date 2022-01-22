@@ -20,7 +20,7 @@ template_stuff = {
 
 challenge_url = template_stuff['baseurl'] + '{}/'
 
-outputdir = '/home/astrogreg/github/ngeht-analysis-content/uploads'
+outputdir = '/home/astrogreg/github/ngeht-challenge-content/uploads'
 
 mp_process_count = 1
 mp_executor = ProcessPoolExecutor(mp_process_count)
@@ -338,5 +338,7 @@ logging.basicConfig(level=loglevel)
 
 slack_webhook = get_slack_webhook()
 
+# 8002: challenge.ngeht.org
+# 8001: test.challenge.ngeht.org
 port = int(os.getenv('PORT', '8001'))
 web.run_app(app_factory(), host='localhost', port=port, reuse_port=True)
