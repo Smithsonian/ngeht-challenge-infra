@@ -21,8 +21,9 @@ def get_slack_webhook():
     except Exception:
         LOGGER.exception('slack secret json load from ~/.slack_secrets failed')
         return
+
     try:
-        url = secrets['webhooks']['ngeht-2021']['analysis-challenge-bots']
+        url = secrets['webhooks']['ngeht']['analysis-challenge-bots']
     except Exception:
         LOGGER.exception('slack secret json key not found in ~/.slack_secrets')
         return
