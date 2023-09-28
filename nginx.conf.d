@@ -35,6 +35,12 @@ server {
         auth_basic "Enter challenge1/password for Challenge 3";
         auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
+    location /c4downloads/ {
+        root   /home/astrogreg/github/ngeht-challenge-content/live-website/;
+        index  index.html;
+        auth_basic "Enter challenge1/password for Challenge 4";
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
+    }
 
     location /upload {
        proxy_pass http://localhost:8001;
@@ -102,6 +108,12 @@ server {
         root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
         index  index.html;
         auth_basic "Enter challenge3/password for Challenge 3";
+        auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
+    }
+    location /c4downloads/ {
+        root   /home/astrogreg/github/ngeht-challenge-content/test-website/;
+        index  index.html;
+        auth_basic "Enter challenge3/password for Challenge 4";
         auth_basic_user_file /home/astrogreg/github/ngeht-challenge-infra/live-htpasswd;
     }
 
