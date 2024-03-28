@@ -274,7 +274,7 @@ routes = web.RouteTableDef()
 
 @routes.get('/testing/fork/sleep_10')
 async def do_fork_sleep_10(request):
-    await run_external_exec('sleep 10')
+    await run_external_exec('sleep 10'.split())
     return web.Response(status=200, text='sleep 10', content_type='text/plain')
 
 
