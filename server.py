@@ -315,7 +315,7 @@ async def upload(request):
     problems = []
     fields, outfile = await upload_parse_form(reader, problems)
     if outfile:
-        outfile = outfile.replace('..', '')
+        outfile = outfile.replace('.', '')
     outfile = upload_rename_upload(outfile, fields, problems)
 
     upload_check_one_of(fields, problems)
